@@ -1,0 +1,41 @@
+BootStrap: docker
+From: ubuntu:18.04
+
+%post
+    apt-get -y update
+
+    # to obtain the latest version of cmake need to get from the kitware repository, this is taken from https://askubuntu.com/questions/355565/how-do-i-install-the-latest-version-of-cmake-from-the-command-line
+    apt-get install -y gpg software-properties-common wget
+    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+    apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
+    apt-get install -y kitware-archive-keyring
+    rm /etc/apt/trusted.gpg.d/kitware.gpg
+    apt-get -y update
+    apt-get install -y cmake
+
+
+    apt-get -y install build-essential autoconf patch libtool automake git
+    apt-get -y install qtbase5-dev libqt5svg5-dev
+    apt-get -y install libeigen3-dev libsqlite3-dev libwildmagic-dev libboost-random1.62-dev libhdf5-serial-dev
+    apt-get -y install libboost-regex1.62-dev libboost-iostreams1.62-dev libboost-date-time1.62-dev libboost-math1.62-dev
+    apt-get -y install libxerces-c-dev libglpk-dev zlib1g-dev libsvm-dev libbz2-dev seqan-dev coinor-libcoinmp-dev
+
+    # make OpenSwath
+    cd /Development
+    mkdir OpenMS-build
+    cd OpenMS-build
+    cmake -DBOOST_USE_STATIC=OFF -DHAS_XSERVER=OFF -DWITH_GUI=OFF -DENABLE_TUTORIALS=OFF ../OpenMS
+    make
+
+%files
+	<<<INSERT PATH TO OPENMS SOURCE HERE >>>>> /Development/OpenMS
+
+%environment
+    # add OpenMS library
+    export LD_LIBRARY_PATH="/Development/OpenMS/lib:$LD_LIBRARY_PATH"
+    
+    # add TOPP tools to path
+    export PATH=$PATH:/Development/OpenMS-build/bin
+
+%labels
+    Author Joshua Charkow
