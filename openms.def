@@ -1,9 +1,8 @@
 BootStrap: docker
-From: ubuntu:18.04
+From: ubuntu:22.04
 
 %post
     apt-get -y update
-
     # to obtain the latest version of cmake need to get from the kitware repository, this is taken from https://askubuntu.com/questions/355565/how-do-i-install-the-latest-version-of-cmake-from-the-command-line
     apt-get install -y gpg software-properties-common wget
     wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
@@ -15,20 +14,23 @@ From: ubuntu:18.04
 
 
     apt-get -y install build-essential autoconf patch libtool automake git
-    apt-get -y install qtbase5-dev libqt5svg5-dev
-    apt-get -y install libeigen3-dev libsqlite3-dev libwildmagic-dev libboost-random1.62-dev libhdf5-serial-dev
-    apt-get -y install libboost-regex1.62-dev libboost-iostreams1.62-dev libboost-date-time1.62-dev libboost-math1.62-dev
-    apt-get -y install libxerces-c-dev libglpk-dev zlib1g-dev libsvm-dev libbz2-dev seqan-dev coinor-libcoinmp-dev
+    apt-get -y install qtbase5-dev libqt5svg5-dev libqt5opengl5-dev libqt5core5a
+    apt-get -y install libeigen3-dev libboost-random-dev libboost-regex-dev \
+     libboost-iostreams-dev libboost-date-time-dev libboost-math-dev libxerces-c-dev \
+     zlib1g-dev libsvm-dev libbz2-dev coinor-libcoinmp-dev libhdf5-dev libglpk-dev
+
+    # strip Qt section (fix bug see https://superuser.com/questions/1347723/arch-on-wsl-libqt5core-so-5-not-found-despite-being-installed)
+    strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt5Core.so.5
 
     # make OpenSwath
     cd /Development
     mkdir OpenMS-build
     cd OpenMS-build
-    cmake -DBOOST_USE_STATIC=OFF -DHAS_XSERVER=OFF -DWITH_GUI=OFF -DENABLE_TUTORIALS=OFF ../OpenMS
+    cmake -DBOOST_USE_STATIC=OFF DCMAKE_PREFIX_PATH="/contrib-build/;/usr/;/usr/local" -DHAS_XSERVER=OFF -DWITH_GUI=OFF -DENABLE_TUTORIALS=OFF ../OpenMS
     make
 
 %files
-	<<<INSERT PATH TO OPENMS SOURCE HERE >>>>> /Development/OpenMS
+    <<<INSERT PATH TO OPENMS SOURCE HERE>>> /Development/OpenMS
 
 %environment
     # add OpenMS library
