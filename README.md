@@ -5,7 +5,7 @@ The official OpenMS repository can be found [here](https://github.com/OpenMS/Ope
 
 
 #### Requirements
-1. [Singulairty](https://docs.sylabs.io/guides/3.8/user-guide/quick_start.html) 
+1. [Singulairty](https://docs.sylabs.io/guides/3.8/user-guide/quick_start.html) or [Apptainer](https://apptainer.org/)
 
 #### Building OpenMS
 1. Clone this repository using `git clone https://github.com/jcharkow/openmsSingularity`
