@@ -14,15 +14,11 @@ From: ubuntu:22.04
 
 
     apt-get -y install build-essential autoconf patch libtool automake git
-    apt-get -y install qtbase5-dev libqt5svg5-dev libqt5opengl5-dev libqt5core5a
-    apt-get -y install libeigen3-dev libboost-random-dev libboost-regex-dev \
-     libboost-iostreams-dev libboost-date-time-dev libboost-math-dev libxerces-c-dev \
-     zlib1g-dev libsvm-dev libbz2-dev coinor-libcoinmp-dev libhdf5-dev libglpk-dev
+    apt-get -y install qt6-base-dev libqt6svg6-dev 
+    apt-get -y install libeigen3-dev libboost-random-dev libboost-regex-dev libboost-iostreams-dev libboost-date-time-dev libboost-math-dev 
+    apt-get -y install libxerces-c-dev zlib1g-dev libsvm-dev libbz2-dev coinor-libcoinmp-dev libhdf5-dev libglpk-dev
 
-    # strip Qt section (fix bug see https://superuser.com/questions/1347723/arch-on-wsl-libqt5core-so-5-not-found-despite-being-installed)
-    strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt5Core.so.5
-
-    # make OpenSwath
+    # make OpenMS
     cd /Development
     mkdir OpenMS-build
     cd OpenMS-build
