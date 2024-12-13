@@ -14,8 +14,8 @@ From: ubuntu:22.04
 
 
     apt-get -y install build-essential autoconf patch libtool automake git
-    apt-get -y install qt6-base-dev libqt6svg6-dev 
-    apt-get -y install libeigen3-dev libboost-random-dev libboost-regex-dev libboost-iostreams-dev libboost-date-time-dev libboost-math-dev 
+    apt-get -y install qt6-base-dev libqt6svg6-dev
+    apt-get -y install libeigen3-dev libboost-random-dev libboost-regex-dev libboost-iostreams-dev libboost-date-time-dev libboost-math-dev
     apt-get -y install libxerces-c-dev zlib1g-dev libsvm-dev libbz2-dev coinor-libcoinmp-dev libhdf5-dev libglpk-dev
 
     # make OpenMS
