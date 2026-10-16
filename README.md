@@ -1,4 +1,4 @@
-# Singularity Definition File for building OpenMS
+# Apptainer/Singularity Definition File for building OpenMS
 
 This repository provides a definition file for building a custom build of OpenMS.
 The official OpenMS repository can be found [here](https://github.com/OpenMS/OpenMS)
