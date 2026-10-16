@@ -1,29 +1,71 @@
 BootStrap: docker
-From: ubuntu:22.04
+From: ubuntu:24.04
 
 %post
-    apt-get -y update
-    # to obtain the latest version of cmake need to get from the kitware repository, this is taken from https://askubuntu.com/questions/355565/how-do-i-install-the-latest-version-of-cmake-from-the-command-line
-    apt-get install -y gpg software-properties-common wget
-    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
-    apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
-    apt-get install -y kitware-archive-keyring
-    rm /etc/apt/trusted.gpg.d/kitware.gpg
-    apt-get -y update
-    apt-get install -y cmake
+	# Add "universe" and update:
+	apt update
+		 
+	# Required dependencies:
+	 apt-get -qq install -y \
+	  build-essential \
+	  cmake \
+	  autoconf \
+	  patch \
+	  libtool \
+	  git \
+	  automake \
+	  ninja-build \
+	  xvfb \
+	  ccache \
+	  libgl-dev \
+	  libeigen3-dev \
+	  libboost-random-dev \
+	  libboost-regex-dev \
+	  libboost-iostreams-dev \
+	  libboost-date-time-dev \
+	  libboost-math-dev \
+	  libxerces-c-dev \
+	  zlib1g-dev \
+	  libsvm-dev \
+	  libbz2-dev \
+	  coinor-libcoinmp-dev \
+	  libhdf5-dev \
+	  libsqlite3-dev \
+	  libsqlitecpp-dev \
+	  nlohmann-json3-dev \
+	  libsimde-dev
+	 
+	# libzip (ZIP64 archive support) — available via apt on Ubuntu 24.04
+	apt-get -qq install -y libzip-dev
+	 
+	# Install uv (Python package manager)
+	curl -LsSf https://astral.sh/uv/install.sh | sh
+	 
+	# Install Apache Arrow
+	apt-get install -y -V ca-certificates lsb-release wget
+	wget https://packages.apache.org/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+	apt-get install -y -V ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+	apt update
+	# Install libcurl-dev as a workaround for Arrow CMake config issue
+	# See: https://github.com/apache/arrow/issues/48885
+	 apt-get install -y --no-install-recommends \
+	      libcurl4-openssl-dev \
+	      libarrow-dev \
+	      libparquet-dev
+	 
+	# Optional dependencies:
+	 apt-get -qq install -y \
+	  doxygen \
+	  graphviz
 
 
-    apt-get -y install build-essential autoconf patch libtool automake git
-    apt-get -y install qt6-base-dev libqt6svg6-dev
-    apt-get -y install libeigen3-dev libboost-random-dev libboost-regex-dev libboost-iostreams-dev libboost-date-time-dev libboost-math-dev
-    apt-get -y install libxerces-c-dev zlib1g-dev libsvm-dev libbz2-dev coinor-libcoinmp-dev libhdf5-dev libglpk-dev
+	# make OpenSwath
+	cd /Development
+	mkdir OpenMS-build
+	cd OpenMS-build
+	cmake -DWITH_THERMO_RAW=OFF -DBOOST_USE_STATIC=OFF DCMAKE_PREFIX_PATH="/contrib-build/;/usr/;/usr/local" -DCMAKE_BUILD_TYPE=Release -DHAS_XSERVER=OFF -DWITH_GUI=OFF -DENABLE_TUTORIALS=OFF ../OpenMS
+        make
 
-    # make OpenMS
-    cd /Development
-    mkdir OpenMS-build
-    cd OpenMS-build
-    cmake -DBOOST_USE_STATIC=OFF DCMAKE_PREFIX_PATH="/contrib-build/;/usr/;/usr/local" -DHAS_XSERVER=OFF -DWITH_GUI=OFF -DENABLE_TUTORIALS=OFF ../OpenMS
-    make
 
 %files
     <<<INSERT PATH TO OPENMS SOURCE HERE>>> /Development/OpenMS
@@ -37,3 +79,7 @@ From: ubuntu:22.04
 
 %labels
     Author Joshua Charkow
+
+%help
+    This container is for building custom OpenMS changes into a singularity/apptainer container. Note that there is currently no support for .raw file reading.
+    Path to OpenMS source must be filled in before usage.
